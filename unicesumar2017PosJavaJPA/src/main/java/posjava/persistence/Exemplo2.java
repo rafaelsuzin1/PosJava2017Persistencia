@@ -15,11 +15,14 @@ import posjava.persistence.entities.Garagem;
 import posjava.persistence.entities.Projeto;
 
 public class Exemplo2 {
+	static EntityManagerFactory emf = Persistence.createEntityManagerFactory("posjavaPU");
+	static EntityManager em = emf.createEntityManager();
+
+	private static Garagem getGaragem(Long id) {
+		return  (Garagem) em.createQuery("select g from Garagem g where g.id = " + id).getSingleResult();
+	}
 
 	public static void main(String[] args) {
-
-		EntityManagerFactory emf = Persistence.createEntityManagerFactory("posjavaPU");
-		EntityManager em = emf.createEntityManager();
 
 		EntityTransaction tx1 = em.getTransaction();
 		tx1.begin();
@@ -31,11 +34,9 @@ public class Exemplo2 {
 
 		departamentos.stream().forEach(d -> {
 			em.persist(d);
+			em.flush();
 		});
-		tx1.commit();
 
-		tx1 = em.getTransaction();
-		tx1.begin();
 		List<Garagem> garagens = new ArrayList<Garagem>();
 		for (int i = 0; i < 10; i++) {
 			garagens.add(new Garagem().setLocalizacao("Local " + i).setNumero(Long.valueOf(i)));
@@ -43,11 +44,8 @@ public class Exemplo2 {
 
 		garagens.stream().forEach(g -> {
 			em.persist(g);
+			em.flush();
 		});
-		tx1.commit();
-
-		tx1 = em.getTransaction();
-		tx1.begin();
 		List<Projeto> projetos = new ArrayList<Projeto>();
 		for (int i = 0; i < 5; i++) {
 			projetos.add(new Projeto().setNome("Projeto " + i));
@@ -56,11 +54,7 @@ public class Exemplo2 {
 		projetos.stream().forEach(p -> {
 			em.persist(p);
 		});
-		tx1.commit();
 
-		tx1 = em.getTransaction();
-		tx1.begin();
-		List<Empregado> empregados = new ArrayList<Empregado>();
 		int depart = 0;
 		int garag = 0;
 		int proj = 0;
@@ -79,18 +73,20 @@ public class Exemplo2 {
 					break;
 			}
 
-			empregados.add(new Empregado().setComentario("Comentario " + i).setDepartamento(departamentos.get(depart))
-					.setGaragem(garagens.get(garag)).setProjetos(projs).setNome("Empregado " + 1)
-					.setSalario(new BigDecimal("10")));
+			Empregado empregado = new Empregado().setComentario("Comentario " + i)
+					.setDepartamento(departamentos.get(depart)).setProjetos(projs).setNome("Empregado " + 1)
+					.setSalario(new BigDecimal("10"));
+			Garagem garagem = garagens.get(garag);
+			empregado.setGaragem(garagem);
+			em.persist(empregado);
+			em.flush();
+			garagem.setEmpregado(empregado);
+			em.persist(garagem);
+			em.flush();
 			depart++;
 			garag++;
 			proj++;
 		}
-
-		empregados.stream().forEach(e -> {
-			em.persist(e);
-		});
-
 		tx1.commit();
 	}
 }

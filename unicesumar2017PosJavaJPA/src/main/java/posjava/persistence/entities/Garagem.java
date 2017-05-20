@@ -59,5 +59,4 @@ public class Garagem {
 		this.empregado = empregado;
 		return this;
 	}
-
 }
