@@ -16,8 +16,10 @@ public class Projeto {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "EMP_ID")
+	@Column(name = "PROJ_ID")
 	private Long id;
+	
+	private String nome;
 	
 	@ManyToMany(mappedBy = "projetos")
 	private Collection<Empregado> empregados;
@@ -36,6 +38,15 @@ public class Projeto {
 
 	public void setEmpregados(Collection<Empregado> empregados) {
 		this.empregados = empregados;
+	}
+
+	public String getNome() {
+		return nome;
+	}
+
+	public Projeto setNome(String nome) {
+		this.nome = nome;
+		return this;
 	}
 	
 }

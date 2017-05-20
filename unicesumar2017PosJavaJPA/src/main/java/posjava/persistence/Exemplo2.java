@@ -1,5 +1,6 @@
 package posjava.persistence;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,12 +28,12 @@ public class Exemplo2 {
 		for (int i = 0; i < 4; i++) {
 			departamentos.add(new Departamento().setNome("Departamento " + i));
 		}
-		
-		departamentos.stream().forEach(d ->{
+
+		departamentos.stream().forEach(d -> {
 			em.persist(d);
 		});
 		tx1.commit();
-		
+
 		tx1 = em.getTransaction();
 		tx1.begin();
 		List<Garagem> garagens = new ArrayList<Garagem>();
@@ -40,23 +41,23 @@ public class Exemplo2 {
 			garagens.add(new Garagem().setLocalizacao("Local " + i).setNumero(Long.valueOf(i)));
 		}
 
-		garagens.stream().forEach(g->{
+		garagens.stream().forEach(g -> {
 			em.persist(g);
 		});
 		tx1.commit();
-		
+
 		tx1 = em.getTransaction();
 		tx1.begin();
 		List<Projeto> projetos = new ArrayList<Projeto>();
 		for (int i = 0; i < 5; i++) {
-			projetos.add(new Projeto());
+			projetos.add(new Projeto().setNome("Projeto " + i));
 		}
-		
-		projetos.stream().forEach(p->{
+
+		projetos.stream().forEach(p -> {
 			em.persist(p);
 		});
 		tx1.commit();
-		
+
 		tx1 = em.getTransaction();
 		tx1.begin();
 		List<Empregado> empregados = new ArrayList<Empregado>();
@@ -71,24 +72,25 @@ public class Exemplo2 {
 				proj = 0;
 
 			List<Projeto> projs = new ArrayList<Projeto>();
-			for (Projeto projeto : projetos){
-				if (projetos.indexOf(projeto) <= proj){
+			for (Projeto projeto : projetos) {
+				if (projetos.indexOf(projeto) <= proj) {
 					projs.add(projeto);
-				}else
+				} else
 					break;
 			}
 
 			empregados.add(new Empregado().setComentario("Comentario " + i).setDepartamento(departamentos.get(depart))
-					.setGaragem(garagens.get(garag)).setProjetos(projs));
+					.setGaragem(garagens.get(garag)).setProjetos(projs).setNome("Empregado " + 1)
+					.setSalario(new BigDecimal("10")));
 			depart++;
 			garag++;
 			proj++;
 		}
 
-		empregados.stream().forEach(e->{
+		empregados.stream().forEach(e -> {
 			em.persist(e);
 		});
-		
+
 		tx1.commit();
 	}
 }
